@@ -24,3 +24,18 @@ for movie in movies:
 zipped = list(zip(names, links))
 df = pd.DataFrame(zipped, columns=['Name', 'Link'])
 print(df)
+
+
+
+for name, link in zip(df['Name'], df['Link']):
+    html = requests.get('https://www.imdb.com' + link + "ratings/")
+    soup2 = BeautifulSoup(html, 'lxml')
+
+    all = soup2.find_all('td', class_ = 'ratingTable Selected')
+    all_rating = all.find('div', class_ = 'bigcell').text
+    all_nr = all.find('a', href = True).text
+
+    grid =  
+
+
+
