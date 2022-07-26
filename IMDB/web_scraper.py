@@ -35,7 +35,11 @@ for name, link in zip(df['Name'], df['Link']):
     all_rating = all.find('div', class_ = 'bigcell').text
     all_nr = all.find('a', href = True).text
 
-    grid =  
+    # all ages -> "30-44" (excluding 45+)
+    grid =  soup2.find_all('td', class_ = 'ratingTable') 
+    cells = grid.find
+
+    # 45+
 
 
 
