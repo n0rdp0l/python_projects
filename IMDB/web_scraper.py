@@ -17,29 +17,43 @@ for movie in movies:
     names.append(name)
     links.append(link)
 
-    print(f'''
-    Movie Name: {name}
-    Link: {"www.imdb.com" + link}
-    ''')
+    
 zipped = list(zip(names, links))
 df = pd.DataFrame(zipped, columns=['Name', 'Link'])
-print(df)
 
+age = ["all","sub18","18-29","30-44","44+"]
+gender = ["_m", "_f"]
+colnames = age
+colnames.extend([i+gender[0] for i in age])
+colnames.extend([i+gender[1] for i in age[:5]])
+colnames.extend(["top_1000", "US", "non_US"])
 
+Ratings_df = pd.DataFrame(columns=colnames)
+Voters_df = pd.DataFrame(columns=colnames)
 
-for name, link in zip(df['Name'], df['Link']):
-    html = requests.get('https://www.imdb.com' + link + "ratings/")
+for name, link in zip(movie_links['Name'], movie_links['Link']):
+    html = requests.get('https://www.imdb.com' + link + "ratings/").text
     soup2 = BeautifulSoup(html, 'lxml')
 
-    all = soup2.find_all('td', class_ = 'ratingTable Selected')
-    all_rating = all.find('div', class_ = 'bigcell').text
-    all_nr = all.find('a', href = True).text
 
-    # all ages -> "30-44" (excluding 45+)
     grid =  soup2.find_all('td', class_ = 'ratingTable') 
-    cells = grid.find
+    ratings = []
+    voters = []
+    for cell in grid:
 
-    # 45+
+        rating = cell.find('div', class_ = 'bigcell').text.replace(' ','')
+        voter = cell.find('a', href = True).text.replace(' ','').replace('\n', '')
 
+        ratings.append(rating)
+        voters.append(voter) 
 
+    r_temp = pd.DataFrame([ratings], columns=colnames, index=[name])
+    v_temp = pd.DataFrame([voters], columns=colnames, index=[name])
 
+    Ratings_df = pd.concat([Ratings_df, r_temp])
+    Voters_df =  pd.concat([Voters_df, v_temp])
+
+print("Uncomment last two lines to create csv documents of the dataframes")
+
+# Voters_df.to_csv('Number_of_Voters.csv') #uncomment to create document
+# Ratings_df.to_csv('Ratings.csv') #uncomment to create document
